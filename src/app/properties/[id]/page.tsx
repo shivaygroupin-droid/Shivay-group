@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+export const runtime = 'edge';
 
 // Data now fetched from Firestore with fallback to ALL_PROPERTIES mock array
 const ALL_PROPERTIES = [
