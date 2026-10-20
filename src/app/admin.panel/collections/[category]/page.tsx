@@ -5,7 +5,6 @@ import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import React from "react";
-export const runtime = 'edge';
 
 const MOCK_PROPERTIES: any[] = [
   { id: "1", title: "Rajam Villa", location: "Ankleshwar, Gujarat", type: "houses", price: "Contact for Price", badge: "Ready", images: [], imageFolder: "rajam_villa" },

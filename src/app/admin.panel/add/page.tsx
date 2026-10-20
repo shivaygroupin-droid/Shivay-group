@@ -13,7 +13,6 @@ export default function AddProperty() {
   const [showModal, setShowModal] = useState(false);
   const [isLive, setIsLive] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
   
   // Naye Cloudinary States
   const [images, setImages] = useState<string[]>(Array(12).fill(''));
@@ -31,47 +30,7 @@ export default function AddProperty() {
     amenities: ""
   });
 
-  const handleBrochureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setAiLoading(true);
-    try {
-      const formDataObj = new FormData();
-      formDataObj.append("brochure", file);
-
-      // Call our Next.js API route that interacts with Document AI
-      const response = await fetch("/api/process-brochure", {
-        method: "POST",
-        body: formDataObj,
-      });
-
-      if (!response.ok) throw new Error("Failed to process brochure");
-
-     const data = await response.json();
-      
-      // Auto-fill form fields
-      setFormData(prev => ({
-        ...prev,
-        title: data.title || prev.title,
-        price: data.price || prev.price,
-        location: data.location || prev.location,
-        type: data.type || prev.type,
-        area: data.area || prev.area,
-        beds: data.beds || prev.beds,
-        badge: data.badge || prev.badge,
-        description: data.description || prev.description,
-        amenities: data.amenities && data.amenities.length > 0 ? data.amenities.join(", ") : prev.amenities,
-      }));
-
-      alert("Form auto-filled successfully using Gemini AI!");
-    } catch (error) {
-      console.error(error);
-      alert("Error processing brochure. Please enter details manually.");
-    } finally {
-      setAiLoading(false);
-    }
-  };
+  
 
   // Naya Cloudinary Upload Logic
   const handleImageUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,19 +120,6 @@ export default function AddProperty() {
     <div className="max-w-3xl">
       <h2 className="text-2xl font-serif mb-8">Add New Property</h2>
 
-      {/* AI Brochure Upload */}
-      <div className="bg-gold-500/10 border border-gold-500/30 p-6 rounded-sm mb-8">
-        <h3 className="text-gold-500 text-sm tracking-widest uppercase mb-2">Smart Auto-Fill (Document AI)</h3>
-        <p className="text-white/60 text-sm mb-4">Upload a PDF brochure to automatically extract and fill property details below.</p>
-        <input 
-          type="file" 
-          accept="application/pdf"
-          onChange={handleBrochureUpload}
-          disabled={aiLoading}
-          className="block w-full text-sm text-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-sm file:font-semibold file:bg-gold-500 file:text-black hover:file:bg-gold-600 disabled:opacity-50"
-        />
-        {aiLoading && <p className="text-gold-400 mt-4 text-xs animate-pulse">Analyzing brochure with AI...</p>}
-      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Property Images Grid */}

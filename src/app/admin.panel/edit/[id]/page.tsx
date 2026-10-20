@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { CheckCircle } from "lucide-react";
-export const runtime = 'edge';
+
 
 const MOCK_PROPERTIES: any[] = [
   { id: "1", title: "Rajam Villa", location: "Ankleshwar, Gujarat", type: "houses", area: "500 - 600 sq ft", beds: 3, price: "Contact for Price", badge: "Ready", description: "", amenities: [], images: [] },
