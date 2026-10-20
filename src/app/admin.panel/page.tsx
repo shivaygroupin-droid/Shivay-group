@@ -81,10 +81,10 @@ function DashboardContent() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {[
-          { name: 'New Houses', img: '/image/new-houses.jpg', link: 'houses' },
-          { name: 'Apartments', img: '/image/apartments.jpg', link: 'apartments' },
-          { name: 'Commercial', img: '/image/commercial.jpg', link: 'commercial' },
-          { name: 'Plots', img: '/image/plots.jpg', link: 'plots' }
+          { name: 'New Houses', img: '/Shivay-group/image/new-houses.jpg', link: 'houses' },
+          { name: 'Apartments', img: '/Shivay-group/image/apartments.jpg', link: 'apartments' },
+          { name: 'Commercial', img: '/Shivay-group/image/commercial.jpg', link: 'commercial' },
+          { name: 'Plots', img: '/Shivay-group/image/plots.jpg', link: 'plots' }
         ].map((col) => (
           <Link
             href={`/admin.panel/collections/${col.link}`}

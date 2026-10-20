@@ -124,9 +124,9 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
     property.images && property.images.length > 0
       ? property.images
       : [
-          `/image/${property.imageFolder}/image1.jpg`,
-          `/image/${property.imageFolder}/image2.jpg`,
-          `/image/${property.imageFolder}/image3.jpg`,
+          `/Shivay-group/image/${property.imageFolder}/image1.jpg`,
+          `/Shivay-group/image/${property.imageFolder}/image2.jpg`,
+          `/Shivay-group/image/${property.imageFolder}/image3.jpg`,
         ];
 
   const nextImage = (e: any) => { e.stopPropagation(); setCurrentImgIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1)); };

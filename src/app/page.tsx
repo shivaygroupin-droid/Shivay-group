@@ -14,7 +14,7 @@ export default function Home() {
       <section className="relative h-[90vh] w-full max-w-full">
         <div className="absolute inset-0">
           <Image
-            src="/image/main-dashbaord.jpg"
+            src="/Shivay-group/image/main-dashbaord.jpg"
             alt="Hero background"
             fill
             className="object-cover"
@@ -145,10 +145,10 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[
-          { title: 'New Houses', img: '/image/new-houses.jpg' },
-          { title: 'Apartments', img: '/image/apartments.jpg' },
-          { title: 'Commercial', img: '/image/commercial.jpg' },
-          { title: 'Plots', img: '/image/plots.jpg' }
+          { title: 'New Houses', img: '/Shivay-group/image/new-houses.jpg' },
+          { title: 'Apartments', img: '/Shivay-group/image/apartments.jpg' },
+          { title: 'Commercial', img: '/Shivay-group/image/commercial.jpg' },
+          { title: 'Plots', img: '/Shivay-group/image/plots.jpg' }
         ].map((collection, idx) => (
           <Link href={`/properties?category=${collection.title.toLowerCase()}`} key={idx} className="group relative h-96 block overflow-hidden bg-luxury-gray">
             <Image 
@@ -345,9 +345,9 @@ export default function Home() {
           <div className="md:col-span-1 lg:col-span-2 flex flex-col items-center md:items-start text-center md:text-left gap-6 w-full">
             <h3 className="text-gold-500 tracking-[0.2em] text-sm uppercase font-semibold">Quick Links</h3>
             <ul className="flex flex-row md:flex-col justify-center items-center md:items-start gap-x-8 gap-y-5 w-full">
-              <li className="w-auto md:w-full"><a href="#" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">Home <span className="text-white/30 text-xs hidden md:block">→</span></a></li>
-              <li className="w-auto md:w-full"><a href="#" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">About Us <span className="text-white/30 text-xs hidden md:block">→</span></a></li>
-              <li className="w-auto md:w-full"><a href="/properties" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">Properties <span className="text-white/30 text-xs hidden md:block">→</span></a></li>
+              <li className="w-auto md:w-full"><Link href="/" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">Home <span className="text-white/30 text-xs hidden md:block">→</span></Link></li>
+              <li className="w-auto md:w-full"><Link href="/#our-believe" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">About Us <span className="text-white/30 text-xs hidden md:block">→</span></Link></li>
+              <li className="w-auto md:w-full"><Link href="/properties" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">Properties <span className="text-white/30 text-xs hidden md:block">→</span></Link></li>
             </ul>
           </div>
 

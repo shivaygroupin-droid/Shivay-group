@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import Link from 'next/link';
 import { useRouter } from "next/navigation";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -66,14 +67,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* Admin Sidebar */}
         <aside className="w-56 min-h-[calc(100vh-80px)] bg-black/50 border-r border-white/5 p-6 flex flex-col justify-between">
           <nav className="flex flex-col gap-4 text-sm tracking-wider">
-            <a href="/admin.panel" className="text-white/70 hover:text-gold-500 transition-colors">Dashboard</a>
-            <a href="/admin.panel/add" className="text-white/70 hover:text-gold-500 transition-colors">Add Property</a>
+            <Link href="/admin.panel" className="text-white/70 hover:text-gold-500 transition-colors">Dashboard</Link>
+            <Link href="/admin.panel/add" className="text-white/70 hover:text-gold-500 transition-colors">Add Property</Link>
           </nav>
           
           <nav className="mt-auto">
-            <a href="/" className="text-gold-500 hover:text-gold-400 text-sm tracking-widest uppercase transition-colors flex items-center gap-2">
+            <Link href="/" className="text-gold-500 hover:text-gold-400 text-sm tracking-widest uppercase transition-colors flex items-center gap-2">
               ← Visit Landing Page
-            </a>
+            </Link>
           </nav>
         </aside>
         
