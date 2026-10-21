@@ -79,12 +79,13 @@ function DashboardContent() {
         </Link>
      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
         {[
           { name: 'New Houses', img: '/Shivay-group/image/new-houses.jpg', link: 'houses' },
           { name: 'Apartments', img: '/Shivay-group/image/apartments.jpg', link: 'apartments' },
           { name: 'Commercial', img: '/Shivay-group/image/commercial.jpg', link: 'commercial' },
-          { name: 'Plots', img: '/Shivay-group/image/plots.jpg', link: 'plots' }
+          { name: 'Plots', img: '/Shivay-group/image/plots.jpg', link: 'plots' },
+          { name: 'Rent & Resale', img: '/Shivay-group/image/Rent & Resale.jpg', link: 'rent-resale' }
         ].map((col) => (
           <Link
             href={`/admin.panel/collections/${col.link}`}

@@ -10,13 +10,12 @@ export default function Navbar() {
 
   const [isTourModalOpen, setIsTourModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  if (isAdminRoute) return null;
-
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [visitDate, setVisitDate] = useState('');
   const [status, setStatus] = useState('');
+
+  if (isAdminRoute) return null;
 
   const handleFormSubmit = async (e: any) => {
     e.preventDefault();
@@ -56,12 +55,13 @@ export default function Navbar() {
           </div>
           <Link href="/" className="flex flex-col">
             <span className="font-serif text-xl tracking-widest text-gold-500">SHIVAY GROUP</span>
-            <span className="text-[9px] tracking-[0.3em] text-white/50 uppercase">Private Estates</span>
+           <span className="text-[9px] tracking-[0.3em] text-white/50 uppercase">Private Estates</span>
           </Link>
         </div>
 
         <nav className="hidden lg:flex items-center gap-8 text-xs tracking-widest uppercase text-white/70 pointer-events-auto">
-          <Link href="/#collection" className="hover:text-gold-500 transition-colors">Collection</Link>
+          <Link href="/properties" className="hover:text-gold-500 transition-colors">Collection</Link>
+          <Link href="/showcase" className="hover:text-gold-500 transition-colors">Showcase</Link>
           <Link href="/#our-believe" className="hover:text-gold-500 transition-colors">Our Believe</Link>
           <Link href="/#contact" className="hover:text-gold-500 transition-colors">Contact us</Link>
         </nav>
@@ -81,7 +81,8 @@ export default function Navbar() {
       {/* Mobile Menu Overlay - Moved OUTSIDE header */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed top-24 left-6 right-6 bg-luxury-black/50 backdrop-blur-md border border-white/10 p-6 flex flex-col gap-6 z-[100] shadow-2xl">
-           <Link href="/#collection" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm tracking-widest uppercase text-white/70 hover:text-gold-500 transition-all duration-300 hover:-translate-y-0.5">Collection</Link>
+           <Link href="/properties" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm tracking-widest uppercase text-white/70 hover:text-gold-500 transition-all duration-300 hover:-translate-y-0.5">Collection</Link>
+           <Link href="/showcase" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm tracking-widest uppercase text-white/70 hover:text-gold-500 transition-all duration-300 hover:-translate-y-0.5">Showcase</Link>
            <Link href="/#our-believe" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm tracking-widest uppercase text-white/70 hover:text-gold-500 transition-all duration-300 hover:-translate-y-0.5">Our Believe</Link>
            <Link href="/#contact" onClick={() => setIsMobileMenuOpen(false)} className="block text-sm tracking-widest uppercase text-white/70 hover:text-gold-500 transition-all duration-300 hover:-translate-y-0.5">Contact us</Link>
            <button onClick={() => { setIsMobileMenuOpen(false); setIsTourModalOpen(true); }} className="mt-4 border border-white/20 p-4 text-sm tracking-widest uppercase text-white/70 hover:text-gold-500 hover:border-gold-500 hover:shadow-[0_0_15px_rgba(218,165,32,0.4)] flex justify-between items-center w-full transition-all duration-300 hover:-translate-y-1">

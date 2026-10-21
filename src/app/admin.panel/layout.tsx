@@ -69,6 +69,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <nav className="flex flex-col gap-4 text-sm tracking-wider">
             <Link href="/admin.panel" className="text-white/70 hover:text-gold-500 transition-colors">Dashboard</Link>
             <Link href="/admin.panel/add" className="text-white/70 hover:text-gold-500 transition-colors">Add Property</Link>
+            <Link href="/admin.panel/add-showcase" className="text-white/70 hover:text-gold-500 transition-colors">Add Showcase</Link>
+            <Link href="/admin.panel/manage-showcase" className="text-white/70 hover:text-gold-500 transition-colors">Manage Showcase</Link>
           </nav>
           
           <nav className="mt-auto">

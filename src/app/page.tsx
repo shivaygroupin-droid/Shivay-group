@@ -3,10 +3,29 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getDocs, collection } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function Home() {
   const [isComingSoonOpen, setIsComingSoonOpen] = useState(false);
+  const [searchCollection, setSearchCollection] = useState("all");
+  const [searchConfig, setSearchConfig] = useState("any");
+  const [searchLocation, setSearchLocation] = useState("any");
+  const [totalInventory, setTotalInventory] = useState(4);
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const snapshot = await getDocs(collection(db, "properties"));
+        // 4 Mock properties + Firebase live properties
+        setTotalInventory(4 + snapshot.docs.length);
+      } catch (error) {
+        console.error("Failed to fetch inventory:", error);
+      }
+    };
+    fetchInventory();
+  }, []);
 
   return (
     <div className="min-h-screen bg-luxury-black pb-20 overflow-x-hidden w-full max-w-full">
@@ -58,39 +77,78 @@ export default function Home() {
             <h2 className="text-xs tracking-[0.2em] uppercase text-white/50 flex items-center gap-2">
               <span className="text-gold-500">⧉</span> Private Search Console
             </h2>
-            <span className="text-xs tracking-[0.2em] uppercase text-white/50">Live Inventory - 4</span>
+            <span className="text-xs tracking-[0.2em] uppercase text-white/50">Live Inventory - {totalInventory}</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <label className="block text-[10px] tracking-widest uppercase text-white/40 mb-2">Collection</label>
-              <select className="w-full bg-transparent border-b border-white/20 pb-2 pl-2 pr-8 text-sm focus:outline-none focus:border-gold-500 appearance-none text-white cursor-pointer">
-                <option value="all" className="bg-[#1a1a1a] text-white py-2">All</option>
+              <select 
+                value={searchCollection}
+                onChange={(e) => { setSearchCollection(e.target.value); setSearchConfig("any"); }}
+                className="w-full bg-transparent border-b border-white/20 pb-2 pl-2 pr-8 text-sm focus:outline-none focus:border-gold-500 appearance-none text-white cursor-pointer">
+                <option value="all" className="bg-[#1a1a1a] text-white py-2">All Residences</option>
                 <option value="houses" className="bg-[#1a1a1a] text-white py-2">New Houses</option>
                 <option value="apartments" className="bg-[#1a1a1a] text-white py-2">Apartments</option>
-                <option value="commercial" className="bg-[#1a1a1a] text-white py-2">Commercial</option>
+                <option value="commercial" className="bg-[#1a1a1a] text-white py-2">Commercial Properties</option>
                 <option value="plots" className="bg-[#1a1a1a] text-white py-2">Plots</option>
+                <option value="rent & resale" className="bg-[#1a1a1a] text-white py-2">Rent & Resale</option>
               </select>
             </div>
             <div>
               <label className="block text-[10px] tracking-widest uppercase text-white/40 mb-2">Configuration</label>
-              <select className="w-full bg-transparent border-b border-white/20 pb-2 pl-2 pr-8 text-sm focus:outline-none focus:border-gold-500 appearance-none text-white cursor-pointer">
+              <select
+                value={searchConfig}
+                onChange={(e) => setSearchConfig(e.target.value)}
+                className="w-full bg-transparent border-b border-white/20 pb-2 pl-2 pr-8 text-sm focus:outline-none focus:border-gold-500 appearance-none text-white cursor-pointer">
                 <option value="any" className="bg-[#1a1a1a] text-white py-2">Any configuration</option>
-                <option value="2bhk" className="bg-[#1a1a1a] text-white py-2">2 BHK</option>
-                <option value="3bhk" className="bg-[#1a1a1a] text-white py-2">3 BHK</option>
-                <option value="4bhk" className="bg-[#1a1a1a] text-white py-2">4 BHK+</option>
+                {(searchCollection === "all" || searchCollection === "houses" || searchCollection === "apartments") && (
+                  <>
+                    <option value="1 BHK" className="bg-[#1a1a1a] text-white py-2">1 BHK</option>
+                    <option value="2 BHK" className="bg-[#1a1a1a] text-white py-2">2 BHK</option>
+                    <option value="3 BHK" className="bg-[#1a1a1a] text-white py-2">3 BHK</option>
+                    <option value="4 BHK" className="bg-[#1a1a1a] text-white py-2">4 BHK</option>
+                    <option value="5+ BHK" className="bg-[#1a1a1a] text-white py-2">5+ BHK</option>
+                  </>
+                )}
+                {searchCollection === "commercial" && (
+                  <>
+                    <option value="Office Space" className="bg-[#1a1a1a] text-white py-2">Office Space</option>
+                    <option value="Retail Shop / Showroom" className="bg-[#1a1a1a] text-white py-2">Retail Shop / Showroom</option>
+                    <option value="Commercial Complex" className="bg-[#1a1a1a] text-white py-2">Commercial Complex</option>
+                  </>
+                )}
+                {searchCollection === "plots" && (
+                  <>
+                    <option value="0 - 500 sq. ft." className="bg-[#1a1a1a] text-white py-2">0 - 500 sq. ft.</option>
+                    <option value="500 - 1,000 sq. ft." className="bg-[#1a1a1a] text-white py-2">500 - 1,000 sq. ft.</option>
+                    <option value="1000 - 10000 sq. ft." className="bg-[#1a1a1a] text-white py-2">1000 - 10000 sq. ft.</option>
+                    <option value="10000 - 100000+ sq. ft." className="bg-[#1a1a1a] text-white py-2">10000 - 100000+ sq. ft.</option>
+                  </>
+                )}
+                {searchCollection === "rent & resale" && (
+                  <>
+                    <option value="House" className="bg-[#1a1a1a] text-white py-2">House</option>
+                    <option value="Apartment" className="bg-[#1a1a1a] text-white py-2">Apartment</option>
+                    <option value="Commercial" className="bg-[#1a1a1a] text-white py-2">Commercial</option>
+                    <option value="Plot" className="bg-[#1a1a1a] text-white py-2">Plot</option>
+                  </>
+                )}
               </select>
             </div>
             <div>
               <label className="block text-[10px] tracking-widest uppercase text-white/40 mb-2">Location</label>
-              <select className="w-full bg-transparent border-b border-white/20 pb-2 pl-2 pr-8 text-sm focus:outline-none focus:border-gold-500 appearance-none text-white cursor-pointer">
+              <select 
+                value={searchLocation}
+                onChange={(e) => setSearchLocation(e.target.value)}
+                className="w-full bg-transparent border-b border-white/20 pb-2 pl-2 pr-8 text-sm focus:outline-none focus:border-gold-500 appearance-none text-white cursor-pointer">
                 <option value="any" className="bg-[#111] text-white">Any location</option>
                 <option value="Ankleshwar" className="bg-[#111] text-white">Ankleshwar</option>
                 <option value="Bharuch" className="bg-[#111] text-white">Bharuch</option>
               </select>
             </div>
             <div className="flex items-end">
-              <Link href="/properties" className="w-full bg-gold-400 hover:bg-gold-500 text-luxury-black text-center py-3 text-xs tracking-widest uppercase font-semibold transition-colors">
+              <Link href={`/properties?collection=${searchCollection}&config=${encodeURIComponent(searchConfig)}&location=${encodeURIComponent(searchLocation)}`} className="w-full bg-gold-400 hover:bg-gold-500 text-luxury-black text-center py-3 text-xs tracking-widest uppercase font-semibold transition-colors">
                 Find Residences →
               </Link>
             </div>
@@ -104,7 +162,7 @@ export default function Home() {
         <div>
           <p className="text-gold-500 tracking-[0.2em] text-xs uppercase mb-8 flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold-500"></span>
-              02 / The Point of View
+              01 / The Point of View
             </p>
             <h2 className="font-serif text-4xl md:text-7xl leading-tight mb-8 text-white">
               Space is the<br />
@@ -135,7 +193,7 @@ export default function Home() {
       <section id="collection" className="max-w-7xl mx-auto px-6 py-16">
         <div className="flex justify-between items-end mb-16">
           <div>
-            <p className="text-gold-500 tracking-[0.2em] text-[10px] uppercase mb-4">01 / 04</p>
+            <p className="text-gold-500 tracking-[0.2em] text-[10px] uppercase mb-4">02 / 05</p>
             <h2 className="font-serif text-5xl md:text-6xl">Choose your<br/><span className="italic text-white/80">kind of extraordinary.</span></h2>
           </div>
           <p className="max-w-sm text-white/50 text-sm leading-relaxed hidden md:block">
@@ -143,12 +201,13 @@ export default function Home() {
           </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {[
           { title: 'New Houses', img: '/Shivay-group/image/new-houses.jpg' },
           { title: 'Apartments', img: '/Shivay-group/image/apartments.jpg' },
           { title: 'Commercial', img: '/Shivay-group/image/commercial.jpg' },
-          { title: 'Plots', img: '/Shivay-group/image/plots.jpg' }
+          { title: 'Plots', img: '/Shivay-group/image/plots.jpg' },
+          { title: 'Rent & Resale', img: '/Shivay-group/image/Rent & Resale.jpg' }
         ].map((collection, idx) => (
           <Link href={`/properties?category=${collection.title.toLowerCase()}`} key={idx} className="group relative h-96 block overflow-hidden bg-luxury-gray">
             <Image 
@@ -168,6 +227,84 @@ export default function Home() {
               </div>
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Cinematic Viewings: Shorts & Reels Slider */}
+      <section className="w-full max-w-7xl mx-auto px-6 py-16 md:py-24 border-t border-white/5">
+        <p className="text-gold-500 tracking-[0.2em] text-[10px] uppercase mb-4">03 / Cinematic Viewings</p>
+        <div className="flex justify-between items-end mb-12">
+          <h2 className="font-serif text-4xl md:text-5xl text-white">
+            Shorts & Reels<br/>
+            <span className="italic text-white/80 text-3xl md:text-4xl">Experience the architecture.</span>
+          </h2>
+        </div>
+
+        <div className="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-gold-500/40 hover:[&::-webkit-scrollbar-thumb]:bg-gold-500 [&::-webkit-scrollbar-thumb]:rounded-full">
+          
+          {/* Akshat Bungalows Short */}
+          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
+            <iframe className="w-full h-full object-cover pointer-events-auto" src="https://www.youtube.com/embed/ZmGnhqQYnyQ?autoplay=0&controls=0&modestbranding=1" title="Akshat Bungalows" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent pointer-events-none">
+              <h3 className="font-serif text-white text-xl mb-1 drop-shadow-md">Akshat Bungalows</h3>
+              <p className="text-[10px] tracking-widest text-gold-500 uppercase mb-4">YouTube Short</p>
+            </div>
+            <Link href="/properties?category=houses" className="absolute bottom-4 right-4 z-10 bg-gold-500 hover:bg-gold-600 text-black px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
+              View Info
+            </Link>
+          </div>
+
+          {/* Rajam Villa Short */}
+          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
+            <iframe className="w-full h-full object-cover pointer-events-auto" src="https://www.youtube.com/embed/meDumFfrE3U?autoplay=0&controls=0&modestbranding=1" title="Rajam Villa" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent pointer-events-none">
+              <h3 className="font-serif text-white text-xl mb-1 drop-shadow-md">Rajam Villa</h3>
+              <p className="text-[10px] tracking-widest text-gold-500 uppercase mb-4">YouTube Short</p>
+            </div>
+            <Link href="/properties?category=houses" className="absolute bottom-4 right-4 z-10 bg-gold-500 hover:bg-gold-600 text-black px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
+              View Info
+            </Link>
+          </div>
+
+          {/* Ganesh Bliss Short */}
+          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
+            <iframe className="w-full h-full object-cover pointer-events-auto" src="https://www.youtube.com/embed/YuaCtplUDWw?autoplay=0&controls=0&modestbranding=1" title="Ganesh Bliss" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent pointer-events-none">
+              <h3 className="font-serif text-white text-xl mb-1 drop-shadow-md">Ganesh Bliss</h3>
+              <p className="text-[10px] tracking-widest text-gold-500 uppercase mb-4">YouTube Short</p>
+            </div>
+            <Link href="/properties?category=apartments" className="absolute bottom-4 right-4 z-10 bg-gold-500 hover:bg-gold-600 text-black px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
+              View Info
+            </Link>
+          </div>
+
+          {/* Ganesh Bliss Reel */}
+          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
+            <iframe className="w-full h-full object-cover pointer-events-auto bg-black" src="https://www.instagram.com/p/DecBozQK_TM/embed"></iframe>
+            <div className="absolute bottom-0 left-0 w-full h-24 bg-[#fafafa] z-0 pointer-events-none"></div> 
+            {/* White overlay fallback to hide default IG footer if iframe resizes */}
+            <div className="absolute bottom-0 left-0 w-full p-4 bg-luxury-black pointer-events-none z-10 border-t border-white/10">
+              <h3 className="font-serif text-white text-lg mb-1 drop-shadow-md">Ganesh Bliss</h3>
+              <p className="text-[10px] tracking-widest text-[#E1306C] uppercase mb-4">Instagram Reel</p>
+            </div>
+            <Link href="/properties?category=apartments" className="absolute bottom-4 right-4 z-20 bg-[#E1306C] hover:bg-[#C13584] text-white px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
+              View Info
+            </Link>
+          </div>
+
+          {/* River View Reel */}
+          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
+            <iframe className="w-full h-full object-cover pointer-events-auto bg-black" src="https://www.instagram.com/p/Dek58LSoKsJ/embed"></iframe>
+            <div className="absolute bottom-0 left-0 w-full h-24 bg-[#fafafa] z-0 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-full p-4 bg-luxury-black pointer-events-none z-10 border-t border-white/10">
+              <h3 className="font-serif text-white text-lg mb-1 drop-shadow-md">River View</h3>
+              <p className="text-[10px] tracking-widest text-[#E1306C] uppercase mb-4">Instagram Reel</p>
+            </div>
+            <Link href="/properties" className="absolute bottom-4 right-4 z-20 bg-[#E1306C] hover:bg-[#C13584] text-white px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
+              View Info
+            </Link>
+          </div>
+
         </div>
       </section>
 
@@ -199,8 +336,8 @@ export default function Home() {
             <p className="text-white/70 text-sm leading-relaxed max-w-md mb-10">
               Thoughtful planning, honest materials and the small rituals that make a house feel like home.
             </p>
-            <Link href="/" className="inline-flex items-center gap-2 text-sm tracking-wide text-white hover:text-gold-500 transition-colors w-fit pb-1 border-b border-transparent hover:border-gold-500">
-              Meet the people behind the places <span className="text-gold-500">↗</span>
+            <Link href="/founder" className="inline-flex items-center gap-2 text-sm tracking-wide text-white hover:text-gold-500 transition-colors w-fit pb-1 border-b border-transparent hover:border-gold-500">
+              Meet the Visionary Behind the Legacy <span className="text-gold-500">↗</span>
             </Link>
          </div>
         </div>
@@ -241,19 +378,19 @@ export default function Home() {
       <section className="w-full max-w-7xl mx-auto px-6 py-24 border-t border-white/5 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
           <div>
-            <h3 className="text-gold-500 font-serif text-5xl mb-4">12+</h3>
+            <h3 className="text-gold-500 font-serif text-5xl mb-4">8 +</h3>
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/50">Years of Excellence</p>
           </div>
           <div>
-            <h3 className="text-gold-500 font-serif text-5xl mb-4">$2B</h3>
+            <h3 className="text-gold-500 font-serif text-5xl mb-4">100 Cr +</h3>
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/50">Property Volume</p>
           </div>
           <div>
-            <h3 className="text-gold-500 font-serif text-5xl mb-4">86</h3>
+            <h3 className="text-gold-500 font-serif text-5xl mb-4">1500</h3>
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/50">Residences Sold</p>
           </div>
           <div>
-            <h3 className="text-gold-500 font-serif text-5xl mb-4">15</h3>
+            <h3 className="text-gold-500 font-serif text-5xl mb-4">10</h3>
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/50">Global Awards</p>
           </div>
         </div>
@@ -306,7 +443,7 @@ export default function Home() {
                 </div>
                 <div className="md:pr-2">
                   <p className="text-white/40 text-[10px] md:text-[11px] uppercase tracking-wider mb-1 mt-1 md:mt-0">Email Us</p>
-                  <p className="text-white/90 text-[10px] md:text-sm break-all">info@shivaygroup.in</p>
+                  <p className="text-white/90 text-[10px] md:text-sm break-all">Shivaygroup.in@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -346,7 +483,7 @@ export default function Home() {
             <h3 className="text-gold-500 tracking-[0.2em] text-sm uppercase font-semibold">Quick Links</h3>
             <ul className="flex flex-row md:flex-col justify-center items-center md:items-start gap-x-8 gap-y-5 w-full">
               <li className="w-auto md:w-full"><Link href="/" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">Home <span className="text-white/30 text-xs hidden md:block">→</span></Link></li>
-              <li className="w-auto md:w-full"><Link href="/#our-believe" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">About Us <span className="text-white/30 text-xs hidden md:block">→</span></Link></li>
+              <li className="w-auto md:w-full"><Link href="/#our-believe" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">Our Believe <span className="text-white/30 text-xs hidden md:block">→</span></Link></li>
               <li className="w-auto md:w-full"><Link href="/properties" className="text-white/70 hover:text-gold-500 transition-colors flex items-center justify-center md:justify-between text-sm">Properties <span className="text-white/30 text-xs hidden md:block">→</span></Link></li>
             </ul>
           </div>
@@ -362,10 +499,10 @@ export default function Home() {
               <a href="https://www.facebook.com/people/Shivay-Group/61581884530435/?rdid=oIrOZiQ3wMbJRZhu&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1Ea265SnfX%2F" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded border border-white/20 flex items-center justify-center text-white/60 hover:text-gold-500 hover:border-gold-500 transition-colors shrink-0">
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
               </a>
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsComingSoonOpen(true); }} className="w-10 h-10 rounded border border-white/20 flex items-center justify-center text-white/60 hover:text-gold-500 hover:border-gold-500 transition-colors shrink-0">
+              <a href="https://www.youtube.com/@ShivayGroup7877" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded border border-white/20 flex items-center justify-center text-white/60 hover:text-gold-500 hover:border-gold-500 transition-colors shrink-0">
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon></svg>
               </a>
-              <a href="#" onClick={(e) => { e.preventDefault(); setIsComingSoonOpen(true); }} className="w-10 h-10 rounded border border-white/20 flex items-center justify-center text-white/60 hover:text-gold-500 hover:border-gold-500 transition-colors shrink-0">
+              <a href="https://www.linkedin.com/in/shivay-group-b0a013433/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded border border-white/20 flex items-center justify-center text-white/60 hover:text-gold-500 hover:border-gold-500 transition-colors shrink-0">
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
               </a>
             </div>

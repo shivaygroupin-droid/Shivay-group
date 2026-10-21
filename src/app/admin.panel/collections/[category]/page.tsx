@@ -31,10 +31,12 @@ export default function CollectionPage({ params }: { params: Promise<{ category:
         const mockIds = new Set(MOCK_PROPERTIES.map((p) => p.id));
         const uniqueFirestore = firestoreProperties.filter((p) => !mockIds.has(p.id));
         const all = [...MOCK_PROPERTIES, ...uniqueFirestore];
-        setProperties(all.filter((p) => p.type?.toLowerCase() === category.toLowerCase()));
+        const targetCategory = category.toLowerCase() === "rent-resale" ? "rent & resale" : category.toLowerCase();
+        setProperties(all.filter((p) => p.type?.toLowerCase() === targetCategory));
       } catch (error) {
         console.error("Error fetching:", error);
-        setProperties(MOCK_PROPERTIES.filter((p) => p.type?.toLowerCase() === category.toLowerCase()));
+        const targetCategory = category.toLowerCase() === "rent-resale" ? "rent & resale" : category.toLowerCase();
+        setProperties(MOCK_PROPERTIES.filter((p) => p.type?.toLowerCase() === targetCategory));
       } finally {
         setLoading(false);
       }

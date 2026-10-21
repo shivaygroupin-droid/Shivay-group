@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { getDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-
+import { useSearchParams } from "next/navigation";
+import React, { Suspense } from "react";
 
 // Data now fetched from Firestore with fallback to ALL_PROPERTIES mock array
 const ALL_PROPERTIES = [
@@ -61,12 +62,11 @@ const ALL_PROPERTIES = [
   }
 ];
 
-import React from 'react';
+function PropertyDetailsContent() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
 
-export default function PropertyDetails({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
-
-  const [property, setProperty] = React.useState<any>(ALL_PROPERTIES.find(p => p.id === id) || null);
+  const [property, setProperty] = React.useState<any>(null);
   const [loadingProperty, setLoadingProperty] = React.useState(true);
   const [isPreviewOpen, setIsPreviewOpen] = React.useState(false);
   const [currentImgIndex, setCurrentImgIndex] = React.useState(0);
@@ -78,14 +78,23 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
   const [status, setStatus] = React.useState('');
 
   React.useEffect(() => {
+    window.scrollTo(0, 0); // Ensures page starts at the top
+    
+    if (!id) {
+      setLoadingProperty(false);
+      return;
+    }
+
+    // Set initial mock data if available
+    const mockProp = ALL_PROPERTIES.find(p => p.id === id);
+    if (mockProp) setProperty(mockProp);
+
     const fetchProperty = async () => {
       try {
         const docRef = doc(db, "properties", id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setProperty({ id: docSnap.id, ...docSnap.data() });
-        } else {
-          // Firestore doc not found — keep mock fallback already set in useState
         }
       } catch (error) {
         console.error("Firestore fetch failed, using mock fallback:", error);
@@ -106,7 +115,10 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
     
     const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSek653hfcwcbdKU7vGx6gVBCcGeQMOqL7lV5yllD8T8IektPA/formResponse";
     const formData = new FormData();
-    formData.append("entry.2005620554", name);
+    
+    // Passing Property Title with Name
+    const subjectName = `${name} [Interested in: ${property?.title || "Property"}]`;
+    formData.append("entry.2005620554", subjectName);
     formData.append("entry.1166974658", phone);
     if (visitDate) formData.append("entry.839337160", visitDate);
 
@@ -147,7 +159,7 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto" onClick={() => setIsTourModalOpen(false)}>
           <div className="bg-[#f9f7f1] w-full max-w-md p-10 relative shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <button className="absolute top-6 right-6 text-black/50 hover:text-black text-2xl" onClick={() => setIsTourModalOpen(false)}>&times;</button>
-            <p className="text-[#a63732] text-[10px] tracking-widest uppercase mb-4 font-bold">Private Viewing</p>
+            <p className="text-[#a63732] text-[10px] tracking-widest uppercase mb-4 font-bold">Private Viewing · {property.title}</p>
             <h2 className="font-serif text-4xl text-black mb-8 leading-tight">Let's find a time<br/><span className="italic text-[#d0b48f]">that works for you.</span></h2>
             {status === 'success' ? (
               <div className="text-center py-10 text-green-700 font-bold">Thank you! Your visit request has been received.</div>
@@ -214,15 +226,15 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
           <div className="flex gap-12 border-y border-white/10 py-8 mb-12">
             <div>
               <p className="text-[10px] tracking-widest uppercase text-white/40 mb-2">Internal Area</p>
-              <p className="text-xl font-serif">{property.area}</p>
+              <p className="text-xl font-serif">{property.area || "Not Mentioned"}</p>
             </div>
             <div>
               <p className="text-[10px] tracking-widest uppercase text-white/40 mb-2">Bedrooms</p>
-              <p className="text-xl font-serif">{property.beds} Suites</p>
+              <p className="text-xl font-serif">{property.beds || "2"} beds/Suites</p>
             </div>
             <div>
               <p className="text-[10px] tracking-widest uppercase text-white/40 mb-2">Status</p>
-              <p className="text-xl font-serif text-gold-400">Ready</p>
+              <p className="text-xl font-serif text-gold-400">{property.badge || "Ready"}</p>
             </div>
           </div>
 
@@ -234,7 +246,7 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
           <div className="mb-16">
             <h2 className="text-xs tracking-[0.2em] uppercase text-white/50 mb-6">Amenities & Specifications</h2>
             <ul className="grid grid-cols-2 gap-4">
-              {property.amenities?.map((item: string, idx: number) => (
+              {(property.amenities || []).map((item: string, idx: number) => (
                 <li key={idx} className="flex items-center gap-3 text-white/80">
                   <span className="w-1.5 h-1.5 rounded-full bg-gold-500"></span> {item}
                 </li>
@@ -259,7 +271,7 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
         <div className="relative">
           <div className="sticky top-32 bg-luxury-gray border border-white/5 p-8">
              <p className="text-[10px] tracking-widest uppercase text-white/50 mb-2">Guidance Value</p>
-             <p className="font-serif text-4xl text-gold-400 mb-8">{property.price}</p>
+             <p className="font-serif text-4xl text-gold-400 mb-8">{property.price || "Price on Request"}</p>
              
              <button onClick={() => setIsTourModalOpen(true)} className="w-full bg-gold-400 hover:bg-gold-500 text-luxury-black py-4 text-xs font-semibold tracking-widest uppercase transition-colors mb-4">
                Request Private Tour
@@ -279,5 +291,13 @@ export default function PropertyDetails({ params }: { params: Promise<{ id: stri
         
       </div>
     </div>
+  );
+}
+
+export default function PropertyDetailsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-luxury-black pt-20 flex items-center justify-center text-white/50 tracking-widest uppercase">Loading Residence...</div>}>
+      <PropertyDetailsContent />
+    </Suspense>
   );
 }
