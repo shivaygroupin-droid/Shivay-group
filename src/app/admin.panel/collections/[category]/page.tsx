@@ -1,24 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
-import React from "react";
-
-const MOCK_PROPERTIES: any[] = [
-  { id: "1", title: "Rajam Villa", location: "Ankleshwar, Gujarat", type: "houses", price: "Contact for Price", badge: "Ready", images: [], imageFolder: "rajam_villa" },
-  { id: "2", title: "Akshat bunglows", location: "Ankleshwar, Gujarat", type: "houses", price: "Contact for Price", badge: "Ready", images: [], imageFolder: "akshat" },
-  { id: "3", title: "Shreepad Township - 2", location: "Andada Village, Ankleshwar", type: "houses", price: "Contact for Price", badge: "New", images: [], imageFolder: "shreepad" },
-  { id: "4", title: "Ganesh Bliss", location: "GIDC, Ankleshwar", type: "apartments", price: "Contact for Price", badge: "Ready", images: [], imageFolder: "ganesh_bliss" },
-];
 
 export default function CollectionPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = React.use(params);
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
-  const [deleting, setDeleting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [deleting, setDeleting] = useState(false); // <-- BAS YEH LINE ADD KARNI HAI
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -28,15 +20,11 @@ export default function CollectionPage({ params }: { params: Promise<{ category:
           id: docSnap.id,
           ...docSnap.data(),
         })) as any[];
-        const mockIds = new Set(MOCK_PROPERTIES.map((p) => p.id));
-        const uniqueFirestore = firestoreProperties.filter((p) => !mockIds.has(p.id));
-        const all = [...MOCK_PROPERTIES, ...uniqueFirestore];
         const targetCategory = category.toLowerCase() === "rent-resale" ? "rent & resale" : category.toLowerCase();
-        setProperties(all.filter((p) => p.type?.toLowerCase() === targetCategory));
+        setProperties(firestoreProperties.filter((p) => p.type?.toLowerCase() === targetCategory));
       } catch (error) {
         console.error("Error fetching:", error);
-        const targetCategory = category.toLowerCase() === "rent-resale" ? "rent & resale" : category.toLowerCase();
-        setProperties(MOCK_PROPERTIES.filter((p) => p.type?.toLowerCase() === targetCategory));
+        setProperties([]);
       } finally {
         setLoading(false);
       }
@@ -129,7 +117,7 @@ export default function CollectionPage({ params }: { params: Promise<{ category:
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((prop) => (
             <div key={prop.id} className="group bg-black/30 border border-white/10 hover:border-white/20 transition-colors rounded-sm overflow-hidden">
-              <Link href={`/admin.panel/edit/${prop.id}`} className="block">
+              <Link href={`/admin.panel/edit?id=${prop.id}`} className="block">
                 <div className="h-48 bg-luxury-gray relative overflow-hidden">
                   {prop.images && prop.images.length > 0 ? (
                     <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -155,7 +143,7 @@ export default function CollectionPage({ params }: { params: Promise<{ category:
               </Link>
               {/* Action Row */}
               <div className="flex border-t border-white/5">
-                <Link href={`/admin.panel/edit/${prop.id}`} className="flex-1 py-3 text-center text-[9px] tracking-widest uppercase text-gold-500 hover:text-gold-400 hover:bg-white/5 transition-colors">
+                <Link href={`/admin.panel/edit?id=${prop.id}`} className="flex-1 py-3 text-center text-[9px] tracking-widest uppercase text-gold-500 hover:text-gold-400 hover:bg-white/5 transition-colors">
                   Edit
                 </Link>
                 <div className="w-px bg-white/5" />

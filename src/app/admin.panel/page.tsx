@@ -23,26 +23,18 @@ function DashboardContent() {
   const categoryParam = searchParams.get("category");
 
  const fetchProperties = async () => {
-    const MOCK_PROPERTIES = [
-      { id: "1", title: "Rajam Villa", location: "Ankleshwar, Gujarat", type: "houses", area: "500 - 600 sq ft", beds: 3, price: "Contact for Price", badge: "Ready" },
-      { id: "2", title: "Akshat bunglows", location: "Ankleshwar, Gujarat", type: "houses", area: "1000 - 1400 sq ft", beds: 3, price: "Contact for Price", badge: "Ready" },
-      { id: "3", title: "Shreepad Township - 2", location: "Andada Village, Ankleshwar", type: "houses", area: "Not Mentioned", beds: 2, price: "Contact for Price", badge: "New" },
-      { id: "4", title: "Ganesh Bliss", location: "GIDC, Ankleshwar", type: "apartments", area: "678–818 sq. ft.", beds: 2, price: "Contact for Price", badge: "Ready" }
-    ];
     try {
       const snapshot = await getDocs(collection(db, "properties"));
       const firestoreProperties = snapshot.docs.map((docSnap) => ({
         id: docSnap.id,
         ...docSnap.data(),
       })) as any[];
-      const mockIds = new Set(MOCK_PROPERTIES.map((p) => p.id));
-      const uniqueFirestore = firestoreProperties.filter((p) => !mockIds.has(p.id));
-      setProperties([...MOCK_PROPERTIES, ...uniqueFirestore] as any);
+      setProperties(firestoreProperties);
       setErrorMsg("");
     } catch (error: any) {
       console.error("Error fetching properties:", error);
       setErrorMsg(error.message || "Failed to fetch properties.");
-      setProperties(MOCK_PROPERTIES as any);
+      setProperties([]);
     } finally {
       setLoading(false);
     }

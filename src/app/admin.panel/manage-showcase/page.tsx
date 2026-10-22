@@ -45,8 +45,15 @@ export default function ManageShowcasePage() {
 
   return (
     <div className="p-8">
-      <h1 className="font-serif text-3xl text-gold-500 mb-2">Showcase Portfolio Management</h1>
-      <p className="text-white/50 text-sm mb-8">Manage published showcase listings</p>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="font-serif text-3xl text-gold-500 mb-2">Showcase Portfolio Management</h1>
+          <p className="text-white/50 text-sm">Manage published showcase listings</p>
+        </div>
+        <Link href="/admin.panel/add-showcase" className="bg-gold-500 text-black px-6 py-3 text-xs font-semibold tracking-wider uppercase rounded-sm hover:bg-gold-600 transition-colors">
+          + Add Showcase
+        </Link>
+      </div>
       
       {loading ? (
         <div className="text-white/50 animate-pulse">Loading properties...</div>
@@ -68,7 +75,7 @@ export default function ManageShowcasePage() {
                 <h3 className="text-xl text-white font-serif mb-1">{prop.title}</h3>
                 <p className="text-white/50 text-xs mb-4">{prop.location}</p>
                 <div className="flex gap-4">
-                  <Link href={`/admin.panel/edit/${prop.id}`} className="flex-1 text-center bg-white/10 hover:bg-white/20 text-white text-xs tracking-widest uppercase py-2 rounded transition-colors">
+                  <Link href={`/admin.panel/edit?id=${prop.id}`} className="flex-1 text-center bg-white/10 hover:bg-white/20 text-white text-xs tracking-widest uppercase py-2 rounded transition-colors">
                     Edit
                   </Link>
                   <button onClick={() => setDeleteTarget(prop)} className="flex-1 text-center bg-red-900/50 hover:bg-red-900 text-red-200 text-xs tracking-widest uppercase py-2 rounded border border-red-500/30 transition-colors">

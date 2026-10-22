@@ -50,6 +50,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <input name="id" type="text" placeholder="Admin ID" required className="bg-black border border-white/20 p-3 text-white focus:border-gold-500 outline-none text-sm tracking-widest" />
           <input name="pwd" type="password" placeholder="Password" required className="bg-black border border-white/20 p-3 text-white focus:border-gold-500 outline-none text-sm tracking-widest" />
           <button type="submit" className="bg-gold-500 text-black font-bold p-3 mt-2 hover:bg-gold-400 transition-colors uppercase tracking-widest text-sm">Secure Login</button>
+          
+          <div className="mt-4 pt-4 border-t border-white/10 flex justify-center">
+            <Link href="/" className="text-[10px] tracking-widest uppercase text-white/50 hover:text-gold-500 transition-colors flex items-center gap-2 py-1 group">
+              <span className="group-hover:-translate-x-1 transition-transform">←</span> Return to Website
+            </Link>
+          </div>
         </form>
       </div>
     );
@@ -69,8 +75,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <nav className="flex flex-col gap-4 text-sm tracking-wider">
             <Link href="/admin.panel" className="text-white/70 hover:text-gold-500 transition-colors">Dashboard</Link>
             <Link href="/admin.panel/add" className="text-white/70 hover:text-gold-500 transition-colors">Add Property</Link>
-            <Link href="/admin.panel/add-showcase" className="text-white/70 hover:text-gold-500 transition-colors">Add Showcase</Link>
             <Link href="/admin.panel/manage-showcase" className="text-white/70 hover:text-gold-500 transition-colors">Manage Showcase</Link>
+            <Link href="/admin.panel/media-studio" className="text-white/70 hover:text-gold-500 transition-colors">Media & Shorts Studio</Link>
           </nav>
           
           <nav className="mt-auto">

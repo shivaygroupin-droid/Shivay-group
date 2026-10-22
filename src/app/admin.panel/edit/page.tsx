@@ -1,22 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
-import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle } from "lucide-react";
 
-
-const MOCK_PROPERTIES: any[] = [
-  { id: "1", title: "Rajam Villa", location: "Ankleshwar, Gujarat", type: "houses", area: "500 - 600 sq ft", beds: 3, price: "Contact for Price", badge: "Ready", description: "", amenities: [], images: [] },
-  { id: "2", title: "Akshat bunglows", location: "Ankleshwar, Gujarat", type: "houses", area: "1000 - 1400 sq ft", beds: 3, price: "Contact for Price", badge: "Ready", description: "", amenities: [], images: [] },
-  { id: "3", title: "Shreepad Township - 2", location: "Andada Village, Ankleshwar", type: "houses", area: "Not Mentioned", beds: 2, price: "Contact for Price", badge: "New", description: "", amenities: [], images: [] },
-  { id: "4", title: "Ganesh Bliss", location: "GIDC, Ankleshwar", type: "apartments", area: "678–818 sq. ft.", beds: 2, price: "Contact for Price", badge: "Ready", description: "", amenities: [], images: [] },
-];
-
-export default function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
+export default function EditPropertyPage() {
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id') || "";
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -28,12 +20,13 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
 
   const [formData, setFormData] = useState({
     title: "", price: "", location: "", type: "houses",
-    area: "", beds: "", badge: "", description: "", amenities: "",
+    area: "", beds: "", badge: "", description: "", amenities: "", mapEmbed: ""
   });
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
+        if (!id) return;
         const docRef = doc(db, "properties", id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -48,22 +41,14 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
             badge: data.badge || "",
             description: data.description || "",
             amenities: Array.isArray(data.amenities) ? data.amenities.join(", ") : (data.amenities || ""),
+            mapEmbed: data.mapEmbed || ""
           });
           if (data.images && data.images.length > 0) {
             const filled = [...data.images, ...Array(12).fill("")].slice(0, 12);
             setImages(filled);
           }
         } else {
-          // Fallback to mock
-          const mock = MOCK_PROPERTIES.find((p) => p.id === id);
-          if (mock) {
-            setFormData({
-              title: mock.title, price: mock.price, location: mock.location,
-              type: mock.type, area: mock.area, beds: String(mock.beds),
-              badge: mock.badge, description: mock.description || "",
-              amenities: Array.isArray(mock.amenities) ? mock.amenities.join(", ") : "",
-            });
-          }
+          console.error("Property not found in Firestore.");
         }
       } catch (error) {
         console.error("Error fetching property for edit:", error);
@@ -71,6 +56,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
         setLoading(false);
       }
     };
+
     fetchProperty();
   }, [id]);
 
@@ -110,7 +96,7 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
       await updateDoc(docRef, {
         ...formData,
         beds: parseInt(formData.beds) || 0,
-        amenities: formData.amenities.split(",").map((item) => item.trim()),
+        amenities: formData.amenities.split(/[,\n]+/).map((item) => item.trim()).filter(Boolean),
         images: images.filter((url) => url !== ""),
       });
       clearInterval(interval);
@@ -195,12 +181,18 @@ export default function EditPropertyPage({ params }: { params: Promise<{ id: str
           <textarea rows={4} value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none" />
         </div>
         <div>
-          <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Amenities (comma separated)</label>
-          <textarea rows={3} value={formData.amenities} onChange={(e) => setFormData({ ...formData, amenities: e.target.value })} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none" />
+           <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Amenities (comma separated)</label>
+           <textarea rows={3} value={formData.amenities} onChange={e => setFormData({...formData, amenities: e.target.value})} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none"></textarea>
         </div>
 
-        <button disabled={showModal} type="submit" className="bg-gold-500 hover:bg-gold-600 text-black px-8 py-4 text-xs font-semibold tracking-wider uppercase transition-colors rounded-sm disabled:opacity-50">
-          Save Changes
+        <div>
+           <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Google Maps Embed URL</label>
+           <textarea rows={2} value={formData.mapEmbed || ""} onChange={e => setFormData({...formData, mapEmbed: e.target.value})} placeholder="Paste Google Maps <iframe> code here for EXACT pin" className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none mb-1"></textarea>
+           <p className="text-[10px] text-white/40 tracking-wider">Note: For EXACT red pin, go to Google Maps {'>'} Share {'>'} 'Embed a map' {'>'} Copy HTML and paste here. Simple links will only show the general area.</p>
+        </div>
+
+        <button disabled={loading} type="submit" className="bg-gold-500 hover:bg-gold-600 text-black px-8 py-4 text-xs font-semibold tracking-wider uppercase transition-colors rounded-sm disabled:opacity-50">
+          Update Listing
         </button>
       </form>
 

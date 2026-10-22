@@ -29,7 +29,8 @@ export default function AddProperty() {
     beds: "",
     badge: "",
     description: "",
-    amenities: ""
+    amenities: "",
+    mapEmbed: ""
   });
 
   
@@ -94,7 +95,7 @@ export default function AddProperty() {
         ...formData,
         listingType: formData.listingType,
         beds: parseInt(formData.beds) || 0,
-        amenities: formData.amenities.split(",").map(item => item.trim()),
+        amenities: formData.amenities.split(/[,\n]+/).map(item => item.trim()).filter(Boolean),
         images: images.filter(url => url !== ''),
         createdAt: new Date()
       });
@@ -251,6 +252,12 @@ export default function AddProperty() {
         <div>
            <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Amenities (comma separated)</label>
            <textarea rows={3} value={formData.amenities} onChange={e => setFormData({...formData, amenities: e.target.value})} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none"></textarea>
+        </div>
+
+        <div>
+           <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Google Maps Embed URL</label>
+           <textarea rows={2} value={formData.mapEmbed} onChange={e => setFormData({...formData, mapEmbed: e.target.value})} placeholder="Paste Google Maps <iframe> code here for EXACT pin" className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none mb-1"></textarea>
+           <p className="text-[10px] text-white/40 tracking-wider">Note: For EXACT red pin, go to Google Maps {'>'} Share {'>'} 'Embed a map' {'>'} Copy HTML and paste here. Simple links will only show the general area.</p>
         </div>
 
         <button disabled={showModal} type="submit" className="bg-gold-500 hover:bg-gold-600 text-black px-8 py-4 text-xs font-semibold tracking-wider uppercase transition-colors rounded-sm disabled:opacity-50">

@@ -12,19 +12,22 @@ export default function Home() {
   const [searchCollection, setSearchCollection] = useState("all");
   const [searchConfig, setSearchConfig] = useState("any");
   const [searchLocation, setSearchLocation] = useState("any");
-  const [totalInventory, setTotalInventory] = useState(4);
+  const [totalInventory, setTotalInventory] = useState(0);
+  const [reels, setReels] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchInventory = async () => {
+    const fetchData = async () => {
       try {
-        const snapshot = await getDocs(collection(db, "properties"));
-        // 4 Mock properties + Firebase live properties
-        setTotalInventory(4 + snapshot.docs.length);
+        const propsSnapshot = await getDocs(collection(db, "properties"));
+        setTotalInventory(propsSnapshot.docs.length);
+        
+        const mediaSnapshot = await getDocs(collection(db, "media"));
+        setReels(mediaSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       } catch (error) {
-        console.error("Failed to fetch inventory:", error);
+        console.error("Failed to fetch data:", error);
       }
     };
-    fetchInventory();
+    fetchData();
   }, []);
 
   return (
@@ -242,68 +245,28 @@ export default function Home() {
 
         <div className="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-8 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-white/5 [&::-webkit-scrollbar-thumb]:bg-gold-500/40 hover:[&::-webkit-scrollbar-thumb]:bg-gold-500 [&::-webkit-scrollbar-thumb]:rounded-full">
           
-          {/* Akshat Bungalows Short */}
-          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
-            <iframe className="w-full h-full object-cover pointer-events-auto" src="https://www.youtube.com/embed/ZmGnhqQYnyQ?autoplay=0&controls=0&modestbranding=1" title="Akshat Bungalows" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent pointer-events-none">
-              <h3 className="font-serif text-white text-xl mb-1 drop-shadow-md">Akshat Bungalows</h3>
-              <p className="text-[10px] tracking-widest text-gold-500 uppercase mb-4">YouTube Short</p>
-            </div>
-            <Link href="/properties?category=houses" className="absolute bottom-4 right-4 z-10 bg-gold-500 hover:bg-gold-600 text-black px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
-              View Info
-            </Link>
-          </div>
+          {reels.map((reel) => {
+            const isInsta = reel.videoUrl?.includes("instagram.com");
+            const btnColor = isInsta ? "bg-[#E1306C] hover:bg-[#C13584] text-white" : "bg-gold-500 hover:bg-gold-600 text-black";
+            const tagColor = isInsta ? "text-[#E1306C]" : "text-gold-500";
+            const routeLink = reel.propertyId && reel.propertyId !== "all" ? `/property-details?id=${reel.propertyId}` : "/properties";
 
-          {/* Rajam Villa Short */}
-          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
-            <iframe className="w-full h-full object-cover pointer-events-auto" src="https://www.youtube.com/embed/meDumFfrE3U?autoplay=0&controls=0&modestbranding=1" title="Rajam Villa" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent pointer-events-none">
-              <h3 className="font-serif text-white text-xl mb-1 drop-shadow-md">Rajam Villa</h3>
-              <p className="text-[10px] tracking-widest text-gold-500 uppercase mb-4">YouTube Short</p>
-            </div>
-            <Link href="/properties?category=houses" className="absolute bottom-4 right-4 z-10 bg-gold-500 hover:bg-gold-600 text-black px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
-              View Info
-            </Link>
-          </div>
-
-          {/* Ganesh Bliss Short */}
-          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
-            <iframe className="w-full h-full object-cover pointer-events-auto" src="https://www.youtube.com/embed/YuaCtplUDWw?autoplay=0&controls=0&modestbranding=1" title="Ganesh Bliss" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
-            <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent pointer-events-none">
-              <h3 className="font-serif text-white text-xl mb-1 drop-shadow-md">Ganesh Bliss</h3>
-              <p className="text-[10px] tracking-widest text-gold-500 uppercase mb-4">YouTube Short</p>
-            </div>
-            <Link href="/properties?category=apartments" className="absolute bottom-4 right-4 z-10 bg-gold-500 hover:bg-gold-600 text-black px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
-              View Info
-            </Link>
-          </div>
-
-          {/* Ganesh Bliss Reel */}
-          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
-            <iframe className="w-full h-full object-cover pointer-events-auto bg-black" src="https://www.instagram.com/p/DecBozQK_TM/embed"></iframe>
-            <div className="absolute bottom-0 left-0 w-full h-24 bg-[#fafafa] z-0 pointer-events-none"></div> 
-            {/* White overlay fallback to hide default IG footer if iframe resizes */}
-            <div className="absolute bottom-0 left-0 w-full p-4 bg-luxury-black pointer-events-none z-10 border-t border-white/10">
-              <h3 className="font-serif text-white text-lg mb-1 drop-shadow-md">Ganesh Bliss</h3>
-              <p className="text-[10px] tracking-widest text-[#E1306C] uppercase mb-4">Instagram Reel</p>
-            </div>
-            <Link href="/properties?category=apartments" className="absolute bottom-4 right-4 z-20 bg-[#E1306C] hover:bg-[#C13584] text-white px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
-              View Info
-            </Link>
-          </div>
-
-          {/* River View Reel */}
-          <div className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
-            <iframe className="w-full h-full object-cover pointer-events-auto bg-black" src="https://www.instagram.com/p/Dek58LSoKsJ/embed"></iframe>
-            <div className="absolute bottom-0 left-0 w-full h-24 bg-[#fafafa] z-0 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-full p-4 bg-luxury-black pointer-events-none z-10 border-t border-white/10">
-              <h3 className="font-serif text-white text-lg mb-1 drop-shadow-md">River View</h3>
-              <p className="text-[10px] tracking-widest text-[#E1306C] uppercase mb-4">Instagram Reel</p>
-            </div>
-            <Link href="/properties" className="absolute bottom-4 right-4 z-20 bg-[#E1306C] hover:bg-[#C13584] text-white px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors">
-              View Info
-            </Link>
-          </div>
+            return (
+              <div key={reel.id} className="snap-start shrink-0 w-[240px] md:w-[280px] aspect-[9/16] relative bg-luxury-gray border border-white/10 rounded-sm overflow-hidden group">
+                <iframe className="w-full h-full object-cover pointer-events-auto bg-black" src={reel.videoUrl} title={reel.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
+                {isInsta && <div className="absolute bottom-0 left-0 w-full h-24 bg-[#fafafa] z-0 pointer-events-none"></div>}
+                
+                <div className={`absolute bottom-0 left-0 w-full p-4 pointer-events-none z-10 ${isInsta ? 'bg-luxury-black border-t border-white/10' : 'bg-gradient-to-t from-luxury-black via-luxury-black/60 to-transparent'}`}>
+                  <h3 className="font-serif text-white text-lg mb-1 drop-shadow-md">{reel.title}</h3>
+                  <p className={`text-[10px] tracking-widest uppercase mb-4 ${tagColor}`}>{isInsta ? "Instagram Reel" : "YouTube Short"}</p>
+                </div>
+                
+                <Link href={routeLink} className={`absolute bottom-4 right-4 z-20 px-4 py-2 text-[10px] tracking-widest uppercase font-semibold transition-colors ${btnColor}`}>
+                  View Property
+                </Link>
+              </div>
+            );
+          })}
 
         </div>
       </section>
@@ -328,7 +291,7 @@ export default function Home() {
 
           {/* Right Text Content */}
           <div className="flex flex-col justify-center">
-            <p className="text-gold-500 tracking-[0.2em] text-xs uppercase mb-6 font-semibold">Shivay Group / 12 Years</p>
+            <p className="text-gold-500 tracking-[0.2em] text-xs uppercase mb-6 font-semibold">Shivay Group / 8+ Years</p>
             <h2 className="font-serif text-5xl md:text-6xl leading-[1.1] mb-8 text-white">
               We believe the<br />best luxury is<br />
               <span className="italic text-gold-500">belonging.</span>
@@ -378,15 +341,15 @@ export default function Home() {
       <section className="w-full max-w-7xl mx-auto px-6 py-24 border-t border-white/5 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
           <div>
-            <h3 className="text-gold-500 font-serif text-5xl mb-4">8 +</h3>
+            <h3 className="text-gold-500 font-serif text-5xl mb-4">8+</h3>
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/50">Years of Excellence</p>
           </div>
           <div>
-            <h3 className="text-gold-500 font-serif text-5xl mb-4">100 Cr +</h3>
+            <h3 className="text-gold-500 font-serif text-5xl mb-4">100Cr+</h3>
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/50">Property Volume</p>
           </div>
           <div>
-            <h3 className="text-gold-500 font-serif text-5xl mb-4">1500</h3>
+            <h3 className="text-gold-500 font-serif text-5xl mb-4">1500+</h3>
             <p className="text-[10px] tracking-[0.2em] uppercase text-white/50">Residences Sold</p>
           </div>
           <div>
@@ -472,7 +435,7 @@ export default function Home() {
                 </div>
                 <div className="pt-1 flex flex-col items-center md:items-start">
                   <p className="text-white/40 text-[10px] md:text-[11px] uppercase tracking-wider mb-1 mt-1 md:mt-0">Our Location</p>
-                  <a href="#" onClick={(e) => { e.preventDefault(); setIsComingSoonOpen(true); }} className="text-white/90 text-xs md:text-sm flex items-center gap-2 hover:text-gold-500 transition-colors">View on Map <span className="hidden md:inline">→</span></a>
+                  <a href="https://maps.app.goo.gl/77uNK3A8hr4g4W5b6" target="_blank" rel="noopener noreferrer" className="text-white/90 text-xs md:text-sm flex items-center gap-2 hover:text-gold-500 transition-colors">View on Map <span className="hidden md:inline">→</span></a>
                 </div>
               </div>
             </div>

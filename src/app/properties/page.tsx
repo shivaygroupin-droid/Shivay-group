@@ -8,12 +8,6 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 // Real Data
-const MOCK_PROPERTIES = [
-  { id: "1", imageFolder: "rajam_villa", title: "Rajam Villa", location: "Ankleshwar, Gujarat", type: "houses", area: "500 - 600 sq ft", beds: 3, price: "", badge: "Ready" },
-  { id: "2", imageFolder: "akshat", title: "Akshat bunglows", location: "Ankleshwar, Gujarat", type: "houses", area: "1000 - 1400 sq ft", beds: 3, price: "", badge: "Ready" },
-  { id: "3", imageFolder: "shreepad", title: "Shreepad Township - 2", location: "Andada Village, Ankleshwar", type: "houses", area: "Not Mentioned", beds: 2, price: "", badge: "New" },
-  { id: "4", imageFolder: "ganesh_bliss", title: "Ganesh Bliss", location: "GIDC, Ankleshwar", type: "apartments", area: "678–818 sq. ft.", beds: 2, price: "", badge: "Ready" }
-];
 
 function PropertiesContent() {
   const searchParams = useSearchParams();
@@ -24,7 +18,7 @@ function PropertiesContent() {
   const locationParam = searchParams.get("location");
   
   const [filter, setFilter] = useState(categoryParam || "all");
-  const [allProperties, setAllProperties] = useState<any[]>(MOCK_PROPERTIES);
+  const [allProperties, setAllProperties] = useState<any[]>([]);
   const [isNoResultsModalOpen, setIsNoResultsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -44,10 +38,9 @@ function PropertiesContent() {
           id: docSnap.id,
           ...docSnap.data(),
         })) as any[];
-        const mockIds = new Set(MOCK_PROPERTIES.map((p) => p.id));
-        const uniqueFirestore = firestoreProperties.filter((p) => !mockIds.has(p.id) && p.listingType !== 'showcase');
+        const uniqueFirestore = firestoreProperties.filter((p) => p.listingType !== 'showcase');
         const TYPE_ORDER = ["houses", "apartments", "commercial", "plots"];
-        const merged = [...MOCK_PROPERTIES, ...uniqueFirestore];
+        const merged = [...uniqueFirestore];
         merged.sort((a, b) => {
           const ai = TYPE_ORDER.indexOf(a.type?.toLowerCase()) ?? 99;
           const bi = TYPE_ORDER.indexOf(b.type?.toLowerCase()) ?? 99;
@@ -205,9 +198,14 @@ function PropertiesContent() {
                     <Link href={`/property-details?id=${property.id}`} className="text-[10px] tracking-widest uppercase text-white hover:text-gold-500 transition-colors flex items-center gap-2">
                       View Dossier <span>↗</span>
                     </Link>
-                    <a href={`https://wa.me/9265957050?text=I'm interested in ${property.title}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-[10px] tracking-widest uppercase text-[#25D366] hover:text-[#128C7E] transition-colors">
-                      <span className="w-4 h-4 rounded-full border border-current flex items-center justify-center">✆</span> WhatsApp
-                    </a>
+                    <div className="flex items-center gap-4">
+                      <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(property.location || property.title)}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] tracking-widest uppercase text-white/60 hover:text-gold-500 transition-colors group">
+                        <span className="w-4 h-4 rounded-full border border-white/20 flex items-center justify-center group-hover:border-gold-500 transition-colors">⚲</span> Map
+                      </a>
+                      <a href={`https://wa.me/9265957050?text=I'm interested in ${property.title}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-[10px] tracking-widest uppercase text-[#25D366] hover:text-[#128C7E] transition-colors">
+                        <span className="w-4 h-4 rounded-full border border-current flex items-center justify-center">✆</span> WhatsApp
+                      </a>
+                    </div>
                   </div>
                 </div>
             </motion.div>

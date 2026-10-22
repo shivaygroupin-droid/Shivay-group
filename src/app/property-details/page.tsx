@@ -246,7 +246,7 @@ function PropertyDetailsContent() {
           <div className="mb-16">
             <h2 className="text-xs tracking-[0.2em] uppercase text-white/50 mb-6">Amenities & Specifications</h2>
             <ul className="grid grid-cols-2 gap-4">
-              {(property.amenities || []).map((item: string, idx: number) => (
+              {(property.amenities || []).flatMap((item: string) => item.split(/[,\n]+/)).map((item: string) => item.trim()).filter(Boolean).map((item: string, idx: number) => (
                 <li key={idx} className="flex items-center gap-3 text-white/80">
                   <span className="w-1.5 h-1.5 rounded-full bg-gold-500"></span> {item}
                 </li>
@@ -256,14 +256,48 @@ function PropertyDetailsContent() {
           
           <div>
              <h2 className="text-xs tracking-[0.2em] uppercase text-white/50 mb-6">Coordinates</h2>
-             <div className="w-full h-[400px] bg-[#e3e1d9] border border-black/10 flex flex-col items-center justify-center gap-3 relative overflow-hidden" style={{ backgroundImage: "repeating-linear-gradient(45deg, #00000008, #00000008 1px, transparent 1px, transparent 30px)" }}>
-                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-md relative z-10">
-                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#bd403a]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                </div>
-                <h3 className="font-serif text-2xl text-black relative z-10">Location preview</h3>
-                <p className="text-black/60 text-sm relative z-10">{property.location}</p>
-                <p className="text-black/40 text-[10px] tracking-widest uppercase mt-2 relative z-10">Interactive Map Coming Soon</p>
-             </div>
+             {(() => {
+                const query = encodeURIComponent(property.location || property.title || "Gujarat, India");
+                let iframeSrc = `https://maps.google.com/maps?q=${query}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+                let intentUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+                
+                if (property.mapEmbed) {
+                  if (property.mapEmbed.includes("<iframe")) {
+                    const srcMatch = property.mapEmbed.match(/src=["']([^"']+)["']/i);
+                    if (srcMatch && srcMatch[1]) {
+                      iframeSrc = srcMatch[1];
+                    }
+                  } else if (property.mapEmbed.startsWith("http")) {
+                    intentUrl = property.mapEmbed;
+                    iframeSrc = `https://maps.google.com/maps?q=${encodeURIComponent((property.title || "") + " " + (property.location || ""))}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+                  }
+                }
+
+                return (
+                  <div className="w-full h-[420px] relative overflow-hidden rounded-sm border border-white/10 hover:border-gold-500/30 transition-colors shadow-2xl bg-luxury-gray group">
+                    <iframe 
+                      src={iframeSrc} 
+                      className="absolute inset-0 w-full h-full border-0 filter grayscale-[30%] contrast-[105%] opacity-90 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500" 
+                      allowFullScreen={true} 
+                      loading="lazy" 
+                      referrerPolicy="no-referrer-when-downgrade">
+                    </iframe>
+                    
+                    <div className="absolute top-4 right-4 z-10 bg-luxury-black/75 backdrop-blur-md border border-white/10 px-4 py-2 flex items-center gap-2 rounded-sm pointer-events-none">
+                      <span className="w-2 h-2 rounded-full bg-gold-500 animate-pulse"></span>
+                      <span className="text-[10px] tracking-widest text-white/90 uppercase font-medium">Exact Coordinates</span>
+                    </div>
+
+                    <a 
+                      href={intentUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 bg-luxury-black/90 text-gold-400 hover:text-black hover:bg-gold-500 border border-gold-500/40 px-8 py-3 text-xs font-semibold tracking-widest uppercase rounded-sm shadow-[0_0_20px_rgba(218,165,32,0.25)] hover:shadow-[0_0_25px_rgba(218,165,32,0.5)] transition-all duration-300 flex items-center gap-2">
+                      View Location ↗
+                    </a>
+                  </div>
+                );
+             })()}
           </div>
         </div>
         
