@@ -5,7 +5,6 @@ const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
-  basePath: '/Shivay-group',
   images: { 
     unoptimized: true 
   },
