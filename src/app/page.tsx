@@ -61,7 +61,7 @@ export default function Home() {
               <span className="italic pr-2">to come home.</span><br />
             </h1>
             <p className="text-white/70 max-w-md mb-12 text-sm leading-relaxed mt-4">
-              Shivay Group curates exceptional homes, rare land, and landmark addresses for those who choose to live deliberately..
+              Shivay Group curates exceptional homes, rare land, and landmark addresses for those who choose to live deliberately.
             </p>
             
             <div className="flex items-center gap-6">
