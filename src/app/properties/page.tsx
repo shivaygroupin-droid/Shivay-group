@@ -39,11 +39,13 @@ function PropertiesContent() {
           ...docSnap.data(),
         })) as any[];
         const uniqueFirestore = firestoreProperties.filter((p) => p.listingType !== 'showcase');
-        const TYPE_ORDER = ["houses", "apartments", "commercial", "plots"];
+        const TYPE_ORDER = ["houses", "apartments", "commercial", "plots", "rent & resale"];
         const merged = [...uniqueFirestore];
         merged.sort((a, b) => {
-          const ai = TYPE_ORDER.indexOf(a.type?.toLowerCase()) ?? 99;
-          const bi = TYPE_ORDER.indexOf(b.type?.toLowerCase()) ?? 99;
+          let ai = TYPE_ORDER.indexOf(a.type?.toLowerCase() || "");
+          let bi = TYPE_ORDER.indexOf(b.type?.toLowerCase() || "");
+          if (ai === -1) ai = 99;
+          if (bi === -1) bi = 99;
           return ai - bi;
         });
         setAllProperties(merged);
@@ -57,47 +59,62 @@ function PropertiesContent() {
 
   const handleFilterClick = (newFilter: string) => {
     setFilter(newFilter);
-    router.push(newFilter === 'all' ? '/properties' : `/properties?category=${newFilter}`, { scroll: false });
+    router.push(newFilter === 'all' ? '/properties' : `/properties?category=${encodeURIComponent(newFilter)}`, { scroll: false });
   };
 
   const normalizedFilter = filter.toLowerCase().trim();
   const actualFilter = normalizedFilter === "new houses" ? "houses" : normalizedFilter;
   
   const filteredProperties = allProperties.filter(p => {
+    const propType = (p.type || "").toLowerCase().trim();
+
     // 1. Basic Tab Filter Logic
-    let matchesTab = normalizedFilter === "all" ? true : p.type.toLowerCase() === actualFilter;
+    let matchesTab = normalizedFilter === "all" ? true : propType === actualFilter;
 
     // 2. Collection Query Filter Logic
     let matchesCollection = true;
     if (collectionParam && collectionParam !== "all") {
-      if (collectionParam === "houses_apartments") {
-        matchesCollection = (p.type.toLowerCase() === "houses" || p.type.toLowerCase() === "apartments");
+      const colParamLower = collectionParam.toLowerCase().trim();
+      if (colParamLower === "houses_apartments") {
+        matchesCollection = (propType === "houses" || propType === "apartments");
       } else {
-        matchesCollection = (p.type.toLowerCase() === collectionParam);
+        matchesCollection = (propType === colParamLower);
       }
     }
 
     // 3. Configuration Query Filter Logic
     let matchesConfig = true;
     if (configParam && configParam !== "any") {
-       // Beds match for houses/apartments or configuration text match for commercial/plots
-       let propConfig = p.configuration || (p.beds ? `${p.beds} BHK` : "");
-       matchesConfig = propConfig.toLowerCase().includes(configParam.toLowerCase().replace("+", ""));
+       let propConfig = (p.configuration || (p.beds ? `${p.beds} BHK` : "")).toLowerCase().trim();
+       let searchConfigStr = configParam.toLowerCase().trim();
+       
+       if (searchConfigStr.includes("bhk")) {
+         searchConfigStr = searchConfigStr.replace("+", "");
+         propConfig = propConfig.replace("+", "");
+       }
+       
+       matchesConfig = propConfig.includes(searchConfigStr);
     }
 
     // 4. Location Query Filter Logic
     let matchesLocation = true;
     if (locationParam && locationParam !== "any") {
-       matchesLocation = p.location && p.location.toLowerCase().includes(locationParam.toLowerCase());
+       matchesLocation = Boolean(p.location && p.location.toLowerCase().trim().includes(locationParam.toLowerCase().trim()));
     }
 
     return (collectionParam || configParam || locationParam) 
-      ? (matchesCollection && matchesConfig && matchesLocation) 
+      ? Boolean(matchesCollection && matchesConfig && matchesLocation)
       : matchesTab;
   });
 
-  return (
-    <div className="min-h-screen bg-luxury-black pt-32 pb-20">
+        const isSearchConsoleActive = Boolean(
+          (collectionParam && collectionParam !== "all") ||
+          (configParam && configParam !== "any") ||
+          (locationParam && locationParam !== "any")
+        );
+
+        return (
+          <div className="min-h-screen bg-luxury-black pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Header & Filter */}
@@ -121,10 +138,10 @@ function PropertiesContent() {
         </div>
 
         {/* Dynamic Empty State Popup Modal */}
-        {filteredProperties.length === 0 && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="bg-[#1a1a1a] border border-gold-500/20 p-10 max-w-md w-full text-center shadow-2xl rounded-sm">
-               <div className="text-gold-500 mb-6 flex justify-center text-4xl">✧</div>
+              {allProperties.length > 0 && filteredProperties.length === 0 && isSearchConsoleActive && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} className="bg-[#1a1a1a] border border-gold-500/20 p-10 max-w-md w-full text-center shadow-2xl rounded-sm">
+                 <div className="text-gold-500 mb-6 flex justify-center text-4xl">✧</div>
                <h3 className="font-serif text-2xl text-white mb-4">No Matches Found</h3>
                <p className="text-white/60 text-sm leading-relaxed mb-8">
                  Sorry, we currently don't have any properties matching this information. We will add them soon. In the meantime, please check out our other properties.
@@ -144,6 +161,12 @@ function PropertiesContent() {
         )}
 
         {/* Property Grid */}
+          {allProperties.length > 0 && filteredProperties.length === 0 && !isSearchConsoleActive ? (
+            <div className="py-24 text-center col-span-full border border-white/10 bg-[#111] my-12 rounded-sm shadow-xl">
+            <p className="text-gold-500 font-serif text-2xl mb-4">Private Collection In Progress</p>
+            <p className="text-white/40 text-xs tracking-[0.2em] uppercase font-medium">No properties available currently. We will add exclusive listings soon.</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filteredProperties.map((property, idx) => (
             <div key={property.id} className="contents">
@@ -207,34 +230,14 @@ function PropertiesContent() {
                       </a>
                     </div>
                   </div>
-                </div>
-            </motion.div>
+                  </div>
+              </motion.div>
             </div>
           ))}
         </div>
+        )}
         
-        {/* Commercial & Plots Banners (Outside the Grid Loop) */}
-        {(normalizedFilter === 'all' || normalizedFilter === 'commercial') &&
-          allProperties.filter(p => p.type?.toLowerCase() === 'commercial').length === 0 && (
-           <div className="mt-16 mb-4 w-full">
-             <div className="flex items-center gap-6 mb-4">
-               <h3 className="text-gold-500 font-serif text-3xl md:text-4xl">Commercial</h3>
-               <div className="flex-grow h-[1px] bg-gradient-to-r from-gold-500/50 to-transparent"></div>
-             </div>
-             <p className="text-white/40 italic tracking-wider text-sm">Exquisite commercial spaces curated for distinction. We will introduce them soon.</p>
-           </div>
-        )}
-
-        {(normalizedFilter === 'all' || normalizedFilter === 'plots') &&
-          allProperties.filter(p => p.type?.toLowerCase() === 'plots').length === 0 && (
-           <div className="mt-12 mb-4 border-b border-white/10 pb-4 w-full">
-             <div className="flex items-center gap-4">
-               <h3 className="text-gold-500 font-serif text-2xl">Plots</h3>
-               <div className="h-px flex-1 bg-gradient-to-r from-gold-500/50 to-transparent"></div>
-             </div>
-             <p className="text-white/40 italic tracking-wider text-sm mt-4">Rare land parcels in landmark locations. We will introduce them soon.</p>
-           </div>
-        )}
+        {/* Commercial & Plots Banners removed as per requirement */}
 
       </div>
     </div>

@@ -37,11 +37,13 @@ function PropertiesContent() {
         })) as any[];
         const mockIds = new Set(MOCK_PROPERTIES.map((p) => p.id));
         const uniqueFirestore = firestoreProperties.filter((p) => p.listingType === 'showcase');
-        const TYPE_ORDER = ["houses", "apartments", "commercial", "plots"];
+        const TYPE_ORDER = ["houses", "apartments", "commercial", "plots", "rent & resale"];
         const merged = [...uniqueFirestore];
         merged.sort((a, b) => {
-          const ai = TYPE_ORDER.indexOf(a.type?.toLowerCase()) ?? 99;
-          const bi = TYPE_ORDER.indexOf(b.type?.toLowerCase()) ?? 99;
+          let ai = TYPE_ORDER.indexOf(a.type?.toLowerCase() || "");
+          let bi = TYPE_ORDER.indexOf(b.type?.toLowerCase() || "");
+          if (ai === -1) ai = 99;
+          if (bi === -1) bi = 99;
           return ai - bi;
         });
         setAllProperties(merged);
@@ -53,9 +55,9 @@ function PropertiesContent() {
     fetchLiveProperties();
   }, []);
 
-  const handleFilterClick = (newFilter: string) => {
+ const handleFilterClick = (newFilter: string) => {
     setFilter(newFilter);
-    router.push(newFilter === 'all' ? '/showcase' : `/showcase?category=${newFilter}`, { scroll: false });
+    router.push(newFilter === 'all' ? '/showcase' : `/showcase?category=${encodeURIComponent(newFilter)}`, { scroll: false });
   };
 
   const normalizedFilter = filter.toLowerCase().trim();
@@ -86,15 +88,13 @@ function PropertiesContent() {
           </div>
         </div>
 
-        {/* Dynamic Empty State for Specific Categories */}
-        {filteredProperties.length === 0 && filter !== "all" && (
-          <div className="py-20 text-center col-span-full border border-white/10 bg-[#111]">
-            <p className="text-gold-500 font-serif text-2xl mb-2">Private Collection In Progress</p>
-            <p className="text-white/40 text-sm tracking-widest uppercase">No properties available currently. We will add exclusive listings soon.</p>
-          </div>
-        )}
-
         {/* Property Grid */}
+        {filteredProperties.length === 0 ? (
+          <div className="py-24 text-center col-span-full border border-white/10 bg-[#111] my-12 rounded-sm shadow-xl">
+            <p className="text-gold-500 font-serif text-2xl mb-4">Private Collection In Progress</p>
+            <p className="text-white/40 text-xs tracking-[0.2em] uppercase font-medium">No properties available currently. We will add exclusive listings soon.</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filteredProperties.map((property, idx) => (
             <div key={property.id} className="contents">
@@ -153,6 +153,7 @@ function PropertiesContent() {
             </div>
           ))}
        </div>
+       )}
       </div>
     </div>
   );

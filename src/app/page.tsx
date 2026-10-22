@@ -151,7 +151,7 @@ export default function Home() {
               </select>
             </div>
             <div className="flex items-end">
-              <Link href={`/properties?collection=${searchCollection}&config=${encodeURIComponent(searchConfig)}&location=${encodeURIComponent(searchLocation)}`} className="w-full bg-gold-400 hover:bg-gold-500 text-luxury-black text-center py-3 text-xs tracking-widest uppercase font-semibold transition-colors">
+              <Link href={`/properties?collection=${encodeURIComponent(searchCollection)}&config=${encodeURIComponent(searchConfig)}&location=${encodeURIComponent(searchLocation)}`} className="w-full bg-gold-400 hover:bg-gold-500 text-luxury-black text-center py-3 text-xs tracking-widest uppercase font-semibold transition-colors">
                 Find Residences →
               </Link>
             </div>
@@ -212,7 +212,7 @@ export default function Home() {
           { title: 'Plots', img: '/image/plots.jpg' },
           { title: 'Rent & Resale', img: '/image/Rent & Resale.jpg' }
         ].map((collection, idx) => (
-          <Link href={`/properties?category=${collection.title.toLowerCase()}`} key={idx} className="group relative h-96 block overflow-hidden bg-luxury-gray">
+          <Link href={`/properties?category=${encodeURIComponent(collection.title.toLowerCase())}`} key={idx} className="group relative h-96 block overflow-hidden bg-luxury-gray">
             <Image 
               src={collection.img}
               alt={collection.title} 

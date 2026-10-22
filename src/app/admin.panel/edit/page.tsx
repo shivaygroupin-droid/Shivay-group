@@ -19,7 +19,7 @@ export default function EditPropertyPage() {
   const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
 
   const [formData, setFormData] = useState({
-    title: "", price: "", location: "", type: "houses",
+    title: "", price: "", location: "", type: "houses", configuration: "1 BHK",
     area: "", beds: "", badge: "", description: "", amenities: "", mapEmbed: ""
   });
 
@@ -36,6 +36,7 @@ export default function EditPropertyPage() {
             price: data.price || "",
             location: data.location || "",
             type: data.type || "houses",
+            configuration: data.configuration || "1 BHK",
             area: data.area || "",
             beds: String(data.beds || ""),
             badge: data.badge || "",
@@ -154,22 +155,68 @@ export default function EditPropertyPage() {
           </div>
           <div>
             <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Type</label>
-            <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none">
+            <select value={formData.type} onChange={e => {
+                let newConfig = "";
+                if(e.target.value === 'houses' || e.target.value === 'apartments') newConfig = "1 BHK";
+                else if(e.target.value === 'commercial') newConfig = "Office Space";
+                else if(e.target.value === 'plots') newConfig = "0 - 500 sq. ft.";
+                else if(e.target.value === 'rent & resale') newConfig = "House";
+                setFormData({...formData, type: e.target.value, configuration: newConfig, beds: ""});
+              }} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none">
               <option value="houses">Houses</option>
               <option value="apartments">Apartments</option>
-              <option value="penthouses">Penthouses</option>
               <option value="commercial">Commercial</option>
               <option value="plots">Plots</option>
+              <option value="rent & resale">Rent & Resale</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Area (sq ft)</label>
-            <input type="text" value={formData.area} onChange={(e) => setFormData({ ...formData, area: e.target.value })} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none" />
+            <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Configuration</label>
+            <select value={formData.configuration} onChange={e => setFormData({...formData, configuration: e.target.value})} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none">
+                {(formData.type === 'houses' || formData.type === 'apartments') && (
+                  <>
+                    <option value="1 BHK">1 BHK</option>
+                    <option value="2 BHK">2 BHK</option>
+                    <option value="3 BHK">3 BHK</option>
+                    <option value="4 BHK">4 BHK</option>
+                    <option value="5+ BHK">5+ BHK</option>
+                  </>
+                )}
+                {formData.type === 'commercial' && (
+                  <>
+                    <option value="Office Space">Office Space</option>
+                    <option value="Retail Shop / Showroom">Retail Shop / Showroom</option>
+                    <option value="Commercial Complex">Commercial Complex</option>
+                  </>
+                )}
+                {formData.type === 'plots' && (
+                  <>
+                    <option value="0 - 500 sq. ft.">0 - 500 sq. ft.</option>
+                    <option value="500 - 1,000 sq. ft.">500 - 1,000 sq. ft.</option>
+                    <option value="1000 - 10000 sq. ft.">1000 - 10000 sq. ft.</option>
+                    <option value="10000 - 100000+ sq. ft.">10000 - 100000+ sq. ft.</option>
+                  </>
+                )}
+                {formData.type === 'rent & resale' && (
+                  <>
+                    <option value="House">House</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Plot">Plot</option>
+                  </>
+                )}
+            </select>
           </div>
           <div>
-            <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Bedrooms</label>
-            <input type="number" value={formData.beds} onChange={(e) => setFormData({ ...formData, beds: e.target.value })} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none" />
+             <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Area (sq ft)</label>
+             <input type="text" value={formData.area} onChange={e => setFormData({...formData, area: e.target.value})} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none" />
           </div>
+          {formData.type !== 'plots' && formData.type !== 'commercial' && (
+            <div>
+               <label className="block text-xs text-white/50 uppercase tracking-widest mb-2">Bedrooms</label>
+               <input type="number" value={formData.beds} onChange={e => setFormData({...formData, beds: e.target.value})} className="w-full bg-black/50 border border-white/10 p-3 text-white focus:border-gold-500 focus:outline-none" />
+            </div>
+          )}
         </div>
 
         <div>
