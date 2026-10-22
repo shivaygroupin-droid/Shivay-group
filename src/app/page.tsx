@@ -61,7 +61,7 @@ export default function Home() {
               <span className="italic pr-2">to come home.</span><br />
             </h1>
             <p className="text-white/70 max-w-md mb-12 text-sm leading-relaxed mt-4">
-              Aurelia & Vance curates exceptional homes, rare land and landmark addresses for those who choose to live deliberately.
+              Shivay Group curates exceptional homes, rare land, and landmark addresses for those who choose to live deliberately..
             </p>
             
             <div className="flex items-center gap-6">
@@ -172,7 +172,7 @@ export default function Home() {
               <span className="italic text-white/80 pr-2 md:whitespace-nowrap">ultimate signature.</span>
             </h2>
             <p className="text-white/70 max-w-md mb-12 text-base md:text-lg leading-relaxed mt-4">
-              Aurelia & Vance curates exceptional homes, rare land and landmark addresses for those who choose to live deliberately.
+              Shivay Group curates exceptional homes, rare land, and landmark addresses for those who choose to live deliberately.
             </p>
         </div>
         <div className="flex flex-row md:flex-col justify-between h-full w-full md:w-fit ml-auto md:pr-12 gap-8">
