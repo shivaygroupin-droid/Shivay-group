@@ -166,7 +166,7 @@ function PropertiesContent() {
               <div className="absolute top-6 right-6 z-10 text-[10px] tracking-widest uppercase text-white/50">
                 0{idx + 1} / 0{filteredProperties.length}
               </div>
-              <img src={(property as any).images && (property as any).images.length > 0 ? (property as any).images[0] : `/Shivay-group/image/${(property as any).imageFolder}/image1.jpg`} alt="Property Main" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex'; }} />
+              <img src={(property as any).images && (property as any).images.length > 0 ? (property as any).images[0] : `/image/${(property as any).imageFolder}/image1.jpg`} alt="Property Main" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex'; }} />
               <div style={{ display: 'none' }} className="absolute inset-0 w-full h-full bg-[#0e0e0e] flex-col items-center justify-center gap-3 select-none z-0">
                 <span className="text-gold-500/40 text-[10px] tracking-[0.3em] uppercase">Shivay Group</span>
                 <div className="w-8 h-px bg-gold-500/20" />

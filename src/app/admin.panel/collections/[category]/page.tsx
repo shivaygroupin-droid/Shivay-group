@@ -122,7 +122,7 @@ export default function CollectionPage({ params }: { params: Promise<{ category:
                   {prop.images && prop.images.length > 0 ? (
                     <img src={prop.images[0]} alt={prop.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   ) : prop.imageFolder ? (
-                    <img src={`/Shivay-group/image/${prop.imageFolder}/image1.jpg`} alt={prop.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src={`/image/${prop.imageFolder}/image1.jpg`} alt={prop.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-[#0e0e0e]">
                       <span className="text-gold-500/40 text-[9px] tracking-widest uppercase">Shivay Group</span>

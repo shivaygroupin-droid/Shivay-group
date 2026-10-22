@@ -36,7 +36,7 @@ export default function Home() {
       <section className="relative h-[90vh] w-full max-w-full">
         <div className="absolute inset-0">
           <Image
-            src="/Shivay-group/image/main-dashbaord.jpg"
+            src="/image/main-dashbaord.jpg"
             alt="Hero background"
             fill
             className="object-cover"
@@ -206,15 +206,15 @@ export default function Home() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {[
-          { title: 'New Houses', img: '/Shivay-group/image/new-houses.jpg' },
-          { title: 'Apartments', img: '/Shivay-group/image/apartments.jpg' },
-          { title: 'Commercial', img: '/Shivay-group/image/commercial.jpg' },
-          { title: 'Plots', img: '/Shivay-group/image/plots.jpg' },
-          { title: 'Rent & Resale', img: '/Shivay-group/image/Rent & Resale.jpg' }
+          { title: 'New Houses', img: '/image/new-houses.jpg' },
+          { title: 'Apartments', img: '/image/apartments.jpg' },
+          { title: 'Commercial', img: '/image/commercial.jpg' },
+          { title: 'Plots', img: '/image/plots.jpg' },
+          { title: 'Rent & Resale', img: '/image/Rent & Resale.jpg' }
         ].map((collection, idx) => (
           <Link href={`/properties?category=${collection.title.toLowerCase()}`} key={idx} className="group relative h-96 block overflow-hidden bg-luxury-gray">
             <Image 
-              src={collection.img} 
+              src={collection.img}
               alt={collection.title} 
               fill 
               className="object-cover transition-transform duration-700 group-hover:scale-105" 

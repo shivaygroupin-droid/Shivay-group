@@ -20,7 +20,7 @@ export default function FounderPage() {
           >
             {/* Actual Founder Image */}
             <img 
-              src="/Shivay-group/image/Kuldeep%20Dhameliya.jpg" 
+              src="/image/Kuldeep%20Dhameliya.jpg" 
               alt="Kuldeep Dhameliya" 
               className="w-full h-full object-contain object-center transition-all duration-700" 
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
